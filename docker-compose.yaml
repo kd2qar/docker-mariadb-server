@@ -1,0 +1,67 @@
+x-anchors: # CREATE ANCHOR VARIABLES SPECIFIC TO LOCAL ENVIRONMENT
+  PORT: &port ${PORT:-3306}
+  ADPORT: &adport ${ADPORT:-8080}
+  HOSTIP: &hostip ${HOSTIP:-127.0.0.1}
+  CONTAINER: &container ${CONTAINER:-mariadb-server}
+
+services:
+  mariadb:
+    container_name: *container
+    image: &image mariadb:12
+    environment:
+      TZ: Americas/New_York
+      PORT: *port
+      HOSTIP: *hostip
+      CONTAINER: *container
+      MARIADB_USER: ${MARIADB_USER:-elmer}
+      MARIADB_PASSWORD: ${MARIADB_PASSWORD:-fudd}
+      MARIADB_DATABASE: ${MARIADB_DATABASE:-looney}
+      MARIADB_ROOT_PASSWORD: ${MARIADB_ROOT_PASSWORD:-YnNuBsGuB}
+
+    # Volumes store your data between container upgrades
+    volumes:
+      - type: bind
+        source: /srv/mariadb/backup
+        target: /backup
+      - type: bind
+        source: /srv/mariadb/data
+        target: /var/lib/mysql
+        bind:
+          selinux: Z
+      #- '/srv/mariadb/data:/var/lib/mysql:Z'
+      - type: bind
+        source: /srv/mariadb/conf.d
+        target: /etc/mysql/conf.d
+
+    hostname: *container
+    network_mode: bridge
+    ports:
+      - target: *port
+        host_ip: *hostip
+        published: *port
+        protocol: "tcp"
+
+    #command: /bin/bash -c /bin/bash
+    restart: unless-stopped
+
+    logging:
+      driver: json-file
+      options:
+        max-size: 10m
+        max-file: 3
+
+  adminer:
+    image: adminer
+    ports:
+      - target: *adport
+        host_ip: *hostip
+        published: *adport
+        protocol: "tcp"
+    restart: unless-stopped
+    logging:
+      driver: json-file
+      options:
+        max-size: 10m
+        max-file: 3
+
+
