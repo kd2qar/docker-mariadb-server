@@ -1,0 +1,12 @@
+.git
+.env
+.vscode
+.gitignore
+sample.env
+README.md
+LICENSE
+[Oo][Bb][Ss][Oo][Ll][Ee][Tt][Ee]
+[Ii][Gg][Nn][Oo][Rr][Ee]
+Makefile
+mariadb_backup.sh
+
